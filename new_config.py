@@ -3,7 +3,7 @@ c = {
         "96": "python tune.py --root_path ./dataset/ETT-small/   --data_path ETTh1.csv   --data ETTh1   --features M     --enc_in 7   --dec_in 7   --c_out 7"
               "  --seq_len 36 --label_len 0  --pred_len  12  --model NSTS  --zd_dim 3  --hidden_dim 384  --hidden_layers 2   --dropout 0   --activation relu   --learning_rate 0.001  --is_bn --zd_kl_weight 0.0001 --zc_kl_weight 0.0001  --hmm_weight 0.0001 ",
         "192": "python tune.py --root_path ./dataset/ETT-small/   --data_path ETTh1.csv   --data ETTh1   --features M     --enc_in 7   --dec_in 7   --c_out 7"
-              "  --seq_len 72 --label_len 0  --pred_len  24  --model NSTS  --zd_dim 3  --hidden_dim 512  --hidden_layers 2   --dropout 0.5   --activation relu  --learning_rate 0.001  ",
+              "  --seq_len 96 --label_len 0  --pred_len  192  --model NSTS  --zd_dim 3  --hidden_dim 512  --hidden_layers 2   --dropout 0.5   --activation relu  --learning_rate 0.001  ",
         "336": "python tune.py --root_path ./dataset/ETT-small/   --data_path ETTh1.csv   --data ETTh1   --features M     --enc_in 7   --dec_in 7   --c_out 7"
               "  --seq_len 144 --label_len 0  --pred_len  48  --model NSTS  --zd_dim 3  --hidden_dim 512  --hidden_layers 2   --dropout 0.5   --activation relu  --learning_rate 0.001  ",
         "720": "python tune.py --root_path ./dataset/ETT-small/   --data_path ETTh1.csv   --data ETTh1   --features M     --enc_in 7   --dec_in 7   --c_out 7"
@@ -18,7 +18,7 @@ c = {
         "336": "python tune.py --root_path ./dataset/ETT-small/   --data_path ETTm1.csv   --data ETTm1   --features M     --enc_in 7   --dec_in 7   --c_out 7"
               "  --seq_len 288 --label_len 0  --pred_len  144 --model NSTS  --zd_dim 3  --hidden_dim 512  --hidden_layers 2   --dropout 0.5   --activation relu  --learning_rate 0.001  ",
         "720": "python tune.py --root_path ./dataset/ETT-small/   --data_path ETTm1.csv   --data ETTm1   --features M     --enc_in 7   --dec_in 7   --c_out 7"
-              "  --seq_len 384 --label_len 0  --pred_len  192  --model NSTS  --zd_dim 3  --hidden_dim 128  --hidden_layers 1   --dropout 0   --activation relu  --learning_rate 0.001  ",
+              "  --seq_len 96 --label_len 0  --pred_len  720  --model NSTS  --zd_dim 3  --hidden_dim 128  --hidden_layers 1   --dropout 0   --activation relu  --learning_rate 0.001  ",
 
     },
 

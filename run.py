@@ -99,6 +99,8 @@ if __name__ == '__main__':
 
 
     args = parser.parse_args()
+    args.batch_size = 64
+
     args.use_gpu = True if torch.cuda.is_available() and args.use_gpu else False
 
     if args.use_gpu and args.use_multi_gpu:

@@ -307,6 +307,7 @@ class Encoder_ZD(nn.Module):
 
     def kl_loss(self, mus, logvars, z_est, c_embedding):
         lags_and_length = z_est.shape[1]
+        logvars = torch.clamp(logvars, max=10.0)
         q_dist = D.Normal(mus, torch.exp(logvars / 2))
         log_qz = q_dist.log_prob(z_est)
 
@@ -391,6 +392,7 @@ class Encoder_ZC(nn.Module):
 
     def kl_loss(self, mus, logvars, z_est):
         lags_and_length = z_est.shape[1]
+        logvars = torch.clamp(logvars, max=10.0)
         q_dist = D.Normal(mus, torch.exp(logvars / 2))
         log_qz = q_dist.log_prob(z_est)
 
@@ -466,10 +468,10 @@ class NPTransitionPrior(nn.Module):
         batch_x = x.unfold(dimension=1, size=self.lags +
                                              1, step=1).transpose(2, 3)
         batch_x = batch_x.reshape(-1, self.lags + 1, x_dim)
-        batch_x_lags = batch_x[:, :-1]  # (batch_size x length, lags, x_dim)
-        batch_x_t = batch_x[:, -1]  # (batch_size*length, x_dim)
-        # (batch_size*length, lags*x_dim)
+        batch_x_lags = batch_x[:, :-1]  # (batch_size x length, lags, x_dim) 历史数据窗口
+        batch_x_t = batch_x[:, -1]  # (batch_size*length, x_dim) 最后一个时间点数据
 
+        # (batch_size*length, lags*x_dim)
         batch_x_lags = batch_x_lags.reshape(-1, self.lags * x_dim)
         if x.shape[-1] > 100:
             batch_x_lags = self.compress(batch_x_lags)
@@ -590,16 +592,16 @@ class Model(nn.Module):
             hmm_loss = 0
             if c_est == None:
                 E_logp_x, c_est = self.encoder_u(torch.cat([x_enc, y_enc], dim=1))
-                hmm_loss = -E_logp_x.mean()
-            embeddings = self.c_embeddings(c_est)
+                # hmm_loss = -E_logp_x.mean()
+            # embeddings = self.c_embeddings(c_est)
 
-            zc_kl_loss = self.encoder_zc.kl_loss(torch.cat([zc_rec_mean, zc_pred_mean], dim=2).permute(0, 2, 1),
-                                                 torch.cat([zc_rec_std, zc_pred_std], dim=2).permute(0, 2, 1),
-                                                 torch.cat([zc_rec, zc_pred], dim=2).permute(0, 2, 1))
-            zd_kl_loss = self.encoder_zd.kl_loss(torch.cat([zd_rec_mean, zd_pred_mean], dim=2).permute(0, 2, 1),
-                                                 torch.cat([zd_rec_std, zd_pred_std], dim=2).permute(0, 2, 1),
-                                                 torch.cat([zd_rec, zd_pred], dim=2).permute(0, 2, 1), embeddings)
-            other_loss = zc_kl_loss * self.configs.zc_kl_weight + zd_kl_loss * self.configs.zd_kl_weight + hmm_loss * self.configs.hmm_weight + other_loss
+            # zc_kl_loss = self.encoder_zc.kl_loss(torch.cat([zc_rec_mean, zc_pred_mean], dim=2).permute(0, 2, 1),
+            #                                      torch.cat([zc_rec_std, zc_pred_std], dim=2).permute(0, 2, 1),
+            #                                      torch.cat([zc_rec, zc_pred], dim=2).permute(0, 2, 1))
+            # zd_kl_loss = self.encoder_zd.kl_loss(torch.cat([zd_rec_mean, zd_pred_mean], dim=2).permute(0, 2, 1),
+            #                                      torch.cat([zd_rec_std, zd_pred_std], dim=2).permute(0, 2, 1),
+            #                                      torch.cat([zd_rec, zd_pred], dim=2).permute(0, 2, 1), embeddings)
+            # other_loss = zc_kl_loss * self.configs.zc_kl_weight + zd_kl_loss * self.configs.zd_kl_weight + hmm_loss * self.configs.hmm_weight + other_loss
             if is_out_u:
                 return y, other_loss, c_est
         return y, other_loss

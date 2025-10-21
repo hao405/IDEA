@@ -11,7 +11,7 @@ from exp.exp_nsts_with_pre import Exp_NSTS_Pre
 from utils.tools import setSeed
 
 if __name__ == '__main__':
-
+    torch.autograd.set_detect_anomaly(True)
     parser = argparse.ArgumentParser()
 
     parser.add_argument('--attn', type=str, default='prob', help='attention used in encoder, options:[prob, full]')

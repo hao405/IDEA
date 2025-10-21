@@ -200,7 +200,8 @@ class MyHMM(nn.Module):
         #                          [1.,1.,1.,1.,0.,0.,],
         #                            1.,1.,1.,1.,0.,0. ])).cuda()
         # self.observation_means = self.observation_means * self.mask
-        self.observation_stddevs = torch.nn.Parameter(torch.rand(n_class, x_dim), requires_grad=True)
+        # Initialize stddevs with larger values to prevent NaN
+        self.observation_stddevs = torch.nn.Parameter(torch.ones(n_class, x_dim) * 0.5, requires_grad=True)
 
         if self.mode == "em":
             self.register_buffer('log_A', torch.randn(n_class, n_class))
@@ -291,6 +292,11 @@ class MyHMM(nn.Module):
         return c  # , logp_x
 
     def forward(self, x):
+        # Add input validation to check for NaN values
+        if torch.isnan(x).any():
+            print("Warning: NaN values detected in input data, replacing with zeros")
+            x = torch.nan_to_num(x, nan=0.0)
+
         batch_size, lags_and_length, _ = x.shape
         length = lags_and_length - self.lags
         # x_H = (batch_size, length, (lags) * x_dim)
@@ -304,7 +310,11 @@ class MyHMM(nn.Module):
         # out = self.trans(x_H).reshape(batch_size, length, self.n_class, 2 * self.x_dim)
         # mus, logvars = out[..., :self.x_dim], out[..., self.x_dim:] # batch x length x n_class x x_dim
         # dist = tD.Normal(mus, torch.exp(logvars / 2))
-        dist = D.Normal(self.observation_means[:, :4], torch.relu(self.observation_stddevs[:, :4]) + 1e-1)
+        # Add better numerical stability safeguards
+        stddevs = torch.relu(self.observation_stddevs[:, :4]) + 1e-2  # Increased epsilon from 1e-1 to 1e-2
+        # Clamp stddevs to prevent them from becoming too small
+        stddevs = torch.clamp(stddevs, min=1e-2, max=10.0)
+        dist = D.Normal(self.observation_means[:, :4], stddevs)
         # print(x[:, self.lags:].unsqueeze(2).shape)
         # exit()
         # logp_x_c = dist.log_prob(x[:, self.lags:].unsqueeze(2)).sum(-1)  # (batch_size, length, n_class)
@@ -715,15 +725,15 @@ class Model(nn.Module):
             if c_est == None:
                 E_logp_x, c_est = self.encoder_u(torch.cat([x_enc, y_enc], dim=1))
                 hmm_loss = -E_logp_x.mean()
-            embeddings = self.c_embeddings(c_est)
-
-            zc_kl_loss = self.encoder_zc.kl_loss(torch.cat([zc_rec_mean, zc_pred_mean], dim=2).permute(0, 2, 1),
-                                                 torch.cat([zc_rec_std, zc_pred_std], dim=2).permute(0, 2, 1),
-                                                 torch.cat([zc_rec, zc_pred], dim=2).permute(0, 2, 1))
-            zd_kl_loss = self.encoder_zd.kl_loss(torch.cat([zd_rec_mean, zd_pred_mean], dim=2).permute(0, 2, 1),
-                                                 torch.cat([zd_rec_std, zd_pred_std], dim=2).permute(0, 2, 1),
-                                                 torch.cat([zd_rec, zd_pred], dim=2).permute(0, 2, 1), embeddings)
-            other_loss = zc_kl_loss * self.configs.zc_kl_weight + zd_kl_loss * self.configs.zd_kl_weight + hmm_loss * self.configs.hmm_weight + other_loss
+            # embeddings = self.c_embeddings(c_est)
+            #
+            # zc_kl_loss = self.encoder_zc.kl_loss(torch.cat([zc_rec_mean, zc_pred_mean], dim=2).permute(0, 2, 1),
+            #                                      torch.cat([zc_rec_std, zc_pred_std], dim=2).permute(0, 2, 1),
+            #                                      torch.cat([zc_rec, zc_pred], dim=2).permute(0, 2, 1))
+            # zd_kl_loss = self.encoder_zd.kl_loss(torch.cat([zd_rec_mean, zd_pred_mean], dim=2).permute(0, 2, 1),
+            #                                      torch.cat([zd_rec_std, zd_pred_std], dim=2).permute(0, 2, 1),
+            #                                      torch.cat([zd_rec, zd_pred], dim=2).permute(0, 2, 1), embeddings)
+            # other_loss = zc_kl_loss * self.configs.zc_kl_weight + zd_kl_loss * self.configs.zd_kl_weight + hmm_loss * self.configs.hmm_weight + other_loss
             if is_out_u:
                 return y, other_loss, c_est
         return y, other_loss

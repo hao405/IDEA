@@ -8,6 +8,9 @@ from exp.exp_nsts import Exp_NSTS
 
 from exp.exp_nsts_with_pre import Exp_NSTS_Pre
 from utils.tools import setSeed
+# 导入 TrialPruned 异常用于剪枝
+from optuna.exceptions import TrialPruned
+
 
 def objective(trial):
     parser = argparse.ArgumentParser()
@@ -63,7 +66,7 @@ def objective(trial):
 
     # optimizationF
     parser.add_argument('--num_workers', type=int, default=10, help='data loader num workers')
-    parser.add_argument('--train_epochs', type=int, default=15, help='train epochs')
+    parser.add_argument('--train_epochs', type=int, default=20, help='train epochs')
     parser.add_argument('--batch_size', type=int, default=32, help='batch size of train input data')
     parser.add_argument('--patience', type=int, default=5, help='early stopping patience')
     parser.add_argument('--learning_rate', type=float, default=0.0001, help='optimizer learning rate')
@@ -124,17 +127,17 @@ def objective(trial):
         args.device_ids = [int(id_) for id_ in device_ids]
         args.gpu = args.device_ids[0]
 
-    #设置optuna超参
-    args.learning_rate = trial.suggest_float('learning_rate', 1e-5, 1e-3, log=True)
-    args.batch_size = trial.suggest_categorical('batch_size', [16,32,48,64])
-
+    # 设置optuna超参
+    args.learning_rate = trial.suggest_float('learning_rate', 1e-5, 1e-4, log=True)
+    args.batch_size = trial.suggest_categorical('batch_size', [16, 32, 48, 64])
+    # args.dropout = trial.suggest_float('dropout', 0.05, 0.3)
+    # args.d_model = trial.suggest_categorical('d_model', [128, 256, 512])
+    # args.d_ff = 4 * args.d_model
 
 
     if args.No_prior:
-
         Exp = Exp_NSTS
     else:
-
         Exp = Exp_NSTS_Pre
 
     setSeed(args.seed)
@@ -149,7 +152,8 @@ def objective(trial):
     print(f"pred_len: {args.pred_len}")
 
     exp.train()
-    object,test_mae, test_mse = exp.test()
+
+    object, test_mae, test_mse = exp.test()
 
     trial.set_user_attr("test_mae", test_mae)
     trial.set_user_attr("test_mse", test_mse)
@@ -168,11 +172,11 @@ if __name__ == '__main__':
     parser.add_argument('--seq_len', type=int, default=96, help='input sequence length')
     args, unknown = parser.parse_known_args()
 
-    study = optuna.create_study(direction='minimize')
+    sampler = optuna.samplers.TPESampler(seed=2023)
+    study = optuna.create_study(direction='minimize',sampler=sampler,)
 
-
-#   n_trials控制搜索次数
-    study.optimize(objective, n_trials=16)
+    #   n_trials控制搜索次数
+    study.optimize(objective, n_trials=9, timeout=7200)
 
     print("\n\n--- 优化完成 ---")
     print("完成的试验次数: ", len(study.trials))
