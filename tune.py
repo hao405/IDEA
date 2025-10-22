@@ -173,7 +173,7 @@ if __name__ == '__main__':
     study = optuna.create_study(direction='minimize',pruner=optuna.pruners.MedianPruner())
 
     #   n_trials控制搜索次数
-    study.optimize(objective, n_trials=15,timeout=7200)
+    study.optimize(objective, n_trials=40)
 
     print("\n\n--- 优化完成 ---")
     print("完成的试验次数: ", len(study.trials))
