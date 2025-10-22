@@ -127,7 +127,7 @@ def objective(trial):
 
     # 设置optuna超参
     args.learning_rate = trial.suggest_float('learning_rate', 1e-5, 1e-4, log=True)
-    if args.datapath in ['electricity.csv','weather.csv']:
+    if args.data_path in ['electricity.csv','weather.csv']:
         args.batch_size = trial.suggest_categorical('batch_size', [8,16,24])
     else:
         args.batch_size = trial.suggest_categorical('batch_size', [16, 32, 48, 64])
