@@ -1,4 +1,4 @@
-name: hhq
+name: timebridge
 channels:
   - https://mirrors.tuna.tsinghua.edu.cn/anaconda/pkgs/main
   - defaults
