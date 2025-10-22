@@ -33,7 +33,7 @@ for data in datalist:
         pred_len_list = [336,720]
         seq_len = 96
     elif data == 'ETTm2':
-        pred_len_list = [192,720]
+        pred_len_list = [192,336,720]
         seq_len = 96
     elif data == 'Exchange':
         pred_len_list = [192,336]

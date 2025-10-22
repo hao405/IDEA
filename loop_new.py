@@ -11,15 +11,15 @@ parser.add_argument('-device', default=0, type=int)
 
 args = parser.parse_args()
 datalist = args.dataset
-pred_len_list = [96,192,336,720]
-learning_rates_list = [0.00001,0.0001,0.0005,0.001]
-batch_size_list = [16,32,64]
+pred_len_list = [720]
+learning_rates_list = [5.7565159615422715e-05]
+batch_size_list = [32]
 comand_list = []
 # 新增列表用于记录每次循环的信息
 info_list = []
 seed_list = [2023]
 file_name = "all_IDEA"
-models_list = ["NSTS","NSTS1","NSTS2","NSTS3"]
+models_list = ["NSTS"]
 
 for data in datalist:
     for model in models_list:

@@ -8,8 +8,6 @@ from exp.exp_nsts import Exp_NSTS
 
 from exp.exp_nsts_with_pre import Exp_NSTS_Pre
 from utils.tools import setSeed
-# 导入 TrialPruned 异常用于剪枝
-from optuna.exceptions import TrialPruned
 
 
 def objective(trial):
@@ -147,7 +145,7 @@ def objective(trial):
     print(f"\n--- [Trial {trial.number}] 开始训练 ---")
     param_str = ", ".join([f"{k}={v}" for k, v in trial.params.items()])
     print(param_str)
-    print(f"dataset: {args.data}")
+    print(f"dataset: {args.data_path}")
     print(f"seq_len: {args.seq_len}")
     print(f"pred_len: {args.pred_len}")
 
@@ -172,11 +170,10 @@ if __name__ == '__main__':
     parser.add_argument('--seq_len', type=int, default=96, help='input sequence length')
     args, unknown = parser.parse_known_args()
 
-    sampler = optuna.samplers.TPESampler(seed=2023)
-    study = optuna.create_study(direction='minimize',sampler=sampler,)
+    study = optuna.create_study(direction='minimize',pruner=optuna.pruners.MedianPruner())
 
     #   n_trials控制搜索次数
-    study.optimize(objective, n_trials=9, timeout=7200)
+    study.optimize(objective, n_trials=15,timeout=7200)
 
     print("\n\n--- 优化完成 ---")
     print("完成的试验次数: ", len(study.trials))
