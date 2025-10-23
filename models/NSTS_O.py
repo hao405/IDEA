@@ -24,6 +24,7 @@ class MLP(nn.Module):
                  activation='tanh'):
         super(MLP, self).__init__()
         self.f_in = f_in
+        self.drop_path_prob = 0.0
         self.f_out = f_out
         self.hidden_dim = hidden_dim
         self.hidden_layers = hidden_layers
@@ -72,6 +73,7 @@ class MLP2(nn.Module):
     def __init__(self, input_dim, hidden_dim, output_dim, num_layers, leaky_relu_slope=0.2):
         super().__init__()
         layers = []
+        self.drop_path_prob = 0.0
         for l in range(num_layers):
             if l == 0:
                 layers.append(nn.Linear(input_dim, hidden_dim))
@@ -90,6 +92,8 @@ class MyHMM(nn.Module):
     def __init__(self, n_class, lags, x_dim, hidden_dim, mode="mle_scaled:H", num_layers=3) -> None:
         super().__init__()
         self.mode, self.feat = mode.split(":")
+
+        self.drop_path_prob = 0.0
 
         self.initial_prob = torch.nn.Parameter(torch.ones(n_class) / n_class, requires_grad=True)
         self.transition_matrix = torch.nn.Parameter(torch.ones(n_class, n_class) / n_class, requires_grad=True)
@@ -245,6 +249,9 @@ class Encoder_ZD(nn.Module):
     def __init__(self, configs) -> None:
         super(Encoder_ZD, self).__init__()
         self.configs = configs
+
+        self.drop_path_prob = 0.0
+
         # self.zd_net = nn.MultiheadAttention(embed_dim=self.configs.dynamic_dim, num_heads=self.configs.n_heads)
         self.zd_net = nn.Linear(in_features=self.configs.enc_in, out_features=self.configs.zd_dim)
 
@@ -335,6 +342,9 @@ class Encoder_ZC(nn.Module):
     def __init__(self, configs) -> None:
         super(Encoder_ZC, self).__init__()
         self.configs = configs
+
+        self.drop_path_prob = 0.0
+
         # latent_size 是啥来的，#HMM跟先验的lags是一个东西吗
         if configs.enc_in < 100:
             self.stationary_transition_prior = NPTransitionPrior(lags=self.configs.lags,
@@ -458,6 +468,7 @@ class NPTransitionPrior(nn.Module):
     def __init__(self, lags, latent_size, num_layers=3, hidden_dim=64, compress_dim=10):
         super().__init__()
         self.lags = lags
+        self.drop_path_prob = 0.0
         self.latent_size = latent_size
         self.gs = nn.ModuleList([MLP2(input_dim=compress_dim + 1, hidden_dim=hidden_dim,
                                       output_dim=1, num_layers=num_layers) for _ in
