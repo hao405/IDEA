@@ -19,6 +19,7 @@ seed_list = [2023]
 file_name = "all_IDEA"
 models_list = ["NSTS"]
 
+
 for data in datalist:
     if data == 'ILI':
         pred_len_list = [24,36,48,60]

@@ -410,6 +410,7 @@ class Encoder_ZC(nn.Module):
         q_dist = D.Normal(mus, torch.exp(logvars / 2))
         log_qz = q_dist.log_prob(z_est)
 
+
         # Past KLD
         p_dist = D.Normal(torch.zeros_like(
             mus[:, :self.lags]), torch.ones_like(logvars[:, :self.lags]))
