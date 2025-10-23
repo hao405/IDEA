@@ -572,6 +572,9 @@ class Model(nn.Module):
     def __init__(self, configs) -> None:
         super(Model, self).__init__()
         self.configs = configs
+
+        self.drop_path_prob = 0.0
+
         self.configs.zc_dim = self.configs.enc_in
         self.encoder_zd = Encoder_ZD(configs)
         self.encoder_zc = Encoder_ZC(configs)
