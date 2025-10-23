@@ -3,9 +3,10 @@ import torch
 import torch.nn as nn
 
 import torch.distributions as D
-from torch.func import vmap
-from functorch import  jacfwd, grad
+
+from functorch import vmap, jacfwd, grad
 from torch.autograd.functional import jacobian
+
 
 
 class MLP(nn.Module):
@@ -509,7 +510,11 @@ class NPTransitionPrior(nn.Module):
             residual = self.gs[i](batch_inputs)  # (batch_size x length, 1)
 
             J = jacfwd(self.gs[i])
-            data_J = vmap(J)(batch_inputs).squeeze()
+            batch_size = batch_inputs.shape[0]
+            data_J_list = []
+            for i in range(batch_size):
+                data_J_list.append(J(batch_inputs[i]))
+            data_J = torch.stack(data_J_list).squeeze()
             logabsdet = torch.log(torch.abs(data_J[:, -1]))
 
             sum_log_abs_det_jacobian += logabsdet
@@ -567,7 +572,11 @@ class NPChangeTransitionPrior(nn.Module):
             residual = self.gs[i](batch_inputs)  # (batch_size x length, 1)
 
             J = jacfwd(self.gs[i])
-            data_J = vmap(J)(batch_inputs).squeeze()
+            batch_size = batch_inputs.shape[0]
+            data_J_list = []
+            for i in range(batch_size):
+                data_J_list.append(J(batch_inputs[i]))
+            data_J = torch.stack(data_J_list).squeeze()
             logabsdet = torch.log(torch.abs(data_J[:, -1]))
 
             sum_log_abs_det_jacobian += logabsdet
