@@ -206,10 +206,13 @@ class MyHMM(nn.Module):
         # mus, logvars = out[..., :self.x_dim], out[..., self.x_dim:] # batch x length x n_class x x_dim
         # dist = tD.Normal(mus, torch.exp(logvars / 2))
         dist = D.Normal(self.observation_means[:, :4], torch.relu(self.observation_stddevs[:, :4]) + 1e-1)
+        # [B, L, C, 4]
         # print(x[:, self.lags:].unsqueeze(2).shape)
         # exit()
         # logp_x_c = dist.log_prob(x[:, self.lags:].unsqueeze(2)).sum(-1)  # (batch_size, length, n_class)
-        logp_x_c = dist.log_prob(x[:, :, :4].unsqueeze(2)).sum(-1)
+        logp_x_c = dist.log_prob(x[:, :, :4].unsqueeze(2)).sum(-1) # [B , L, C]
+
+
 
         if self.mode == "em" or self.mode == "mle_scaled":
             log_alpha, log_beta, log_scalers, log_gamma, logp_x = self.forward_backward_log(logp_x_c)
@@ -308,7 +311,8 @@ class Encoder_ZD(nn.Module):
     def kl_loss(self, mus, logvars, z_est, c_embedding):
         lags_and_length = z_est.shape[1]
         #修改1
-        logvars = torch.clamp(logvars, min=-10.0 , max=5.0)
+        logvars = torch.clamp(logvars, min=1e-2 , max=5.0)
+
 
         q_dist = D.Normal(mus, torch.exp(logvars / 2))
         log_qz = q_dist.log_prob(z_est)
@@ -395,7 +399,7 @@ class Encoder_ZC(nn.Module):
     def kl_loss(self, mus, logvars, z_est):
         lags_and_length = z_est.shape[1]
         # 修改1
-        logvars = torch.clamp(logvars, min=-10.0, max=10.0)
+        logvars = torch.clamp(logvars, min=1e-2, max=10.0)
         q_dist = D.Normal(mus, torch.exp(logvars / 2))
         log_qz = q_dist.log_prob(z_est)
 
