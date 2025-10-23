@@ -126,15 +126,13 @@ def objective(trial):
         args.gpu = args.device_ids[0]
 
     # 设置optuna超参
-    args.learning_rate = trial.suggest_float('learning_rate', 1e-5, 1e-4, log=True)
+    args.learning_rate = trial.suggest_float('learning_rate', 1e-5, 5e-3, log=True)
     if args.data_path in ['electricity.csv','weather.csv']:
         args.batch_size = trial.suggest_categorical('batch_size', [16,24,32])
     else:
         args.batch_size = trial.suggest_categorical('batch_size', [16, 32, 48, 64])
-    # args.dropout = trial.suggest_float('dropout', 0.05, 0.3)
-    # args.d_model = trial.suggest_categorical('d_model', [128, 256, 512])
-    # args.d_ff = 4 * args.d_model
-
+    args.dropout = trial.suggest_float('dropout', 0.0, 0.5, step=0.1)
+    args.e_layers = trial.suggest_categorical('e_layers', [2, 3, 4])
 
     if args.No_prior:
         Exp = Exp_NSTS
