@@ -34,7 +34,7 @@ for data in datalist:
                         for batch_size in batch_size_list:
                             seq_len = 96
                             label_len = 0
-                            command = f"""     {d[data][str(pred_len)].replace("run.py", "run_nsts.py")}  --model {model} --seq_len {seq_len} --e_layers {e_layers} --is_bn --label_len 0  --pred_len {pred_len}     --batch_size {batch_size}   --learning_rate {lr}     --train_epochs 40  --patience 5 --seed {seed} """
+                            command = f"""     {d[data][str(pred_len)].replace("run.py", "run_nsts.py")}  --model {model} --seq_len {seq_len} --e_layers {e_layers} --is_bn --label_len 0  --pred_len {pred_len}   --gpu {args.device}  --batch_size {batch_size}   --learning_rate {lr}     --train_epochs 40  --patience 5 --seed {seed} """
                             comand_list.append(command)
                             # 记录当前循环的信息
                             info_list.append(f"当前模型：{model} 当前循环数据集：{data} 输入长度：{seq_len} 预测长度：{pred_len} learning_rate：{lr} seed:{seed}")
