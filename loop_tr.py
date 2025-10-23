@@ -22,7 +22,7 @@ comand_list = []
 info_list = []
 seed_list = [2023]
 file_name = "all_IDEA"
-models_list = ["NSTS"]
+models_list = ["NSTS1"]
 
 for data in datalist:
     for model in models_list:
