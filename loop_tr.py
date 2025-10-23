@@ -14,9 +14,9 @@ parser.add_argument('--use_multi_gpu', action='store_true', help='use multiple g
 
 args = parser.parse_args()
 datalist = args.dataset
-pred_len_list = [96,192,336,720]
+pred_len_list = [720]
 learning_rates_list = [0.00001,0.00005,0.0001]
-batch_size_list = [16,24,32]
+batch_size_list = [24,32]
 comand_list = []
 # 新增列表用于记录每次循环的信息
 info_list = []
