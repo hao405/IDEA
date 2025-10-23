@@ -8,7 +8,6 @@ from functorch import vmap, jacfwd, grad
 from torch.autograd.functional import jacobian
 
 
-
 class MLP(nn.Module):
     '''
     Multilayer perceptron to encode/decode high dimension representation of sequential data
@@ -25,7 +24,6 @@ class MLP(nn.Module):
                  activation='tanh'):
         super(MLP, self).__init__()
         self.f_in = f_in
-        self.drop_path_prob = 0.0
         self.f_out = f_out
         self.hidden_dim = hidden_dim
         self.hidden_layers = hidden_layers
@@ -74,7 +72,6 @@ class MLP2(nn.Module):
     def __init__(self, input_dim, hidden_dim, output_dim, num_layers, leaky_relu_slope=0.2):
         super().__init__()
         layers = []
-        self.drop_path_prob = 0.0
         for l in range(num_layers):
             if l == 0:
                 layers.append(nn.Linear(input_dim, hidden_dim))
@@ -93,8 +90,6 @@ class MyHMM(nn.Module):
     def __init__(self, n_class, lags, x_dim, hidden_dim, mode="mle_scaled:H", num_layers=3) -> None:
         super().__init__()
         self.mode, self.feat = mode.split(":")
-
-        self.drop_path_prob = 0.0
 
         self.initial_prob = torch.nn.Parameter(torch.ones(n_class) / n_class, requires_grad=True)
         self.transition_matrix = torch.nn.Parameter(torch.ones(n_class, n_class) / n_class, requires_grad=True)
@@ -250,9 +245,6 @@ class Encoder_ZD(nn.Module):
     def __init__(self, configs) -> None:
         super(Encoder_ZD, self).__init__()
         self.configs = configs
-
-        self.drop_path_prob = 0.0
-
         # self.zd_net = nn.MultiheadAttention(embed_dim=self.configs.dynamic_dim, num_heads=self.configs.n_heads)
         self.zd_net = nn.Linear(in_features=self.configs.enc_in, out_features=self.configs.zd_dim)
 
@@ -343,9 +335,6 @@ class Encoder_ZC(nn.Module):
     def __init__(self, configs) -> None:
         super(Encoder_ZC, self).__init__()
         self.configs = configs
-
-        self.drop_path_prob = 0.0
-
         # latent_size 是啥来的，#HMM跟先验的lags是一个东西吗
         if configs.enc_in < 100:
             self.stationary_transition_prior = NPTransitionPrior(lags=self.configs.lags,
@@ -469,7 +458,6 @@ class NPTransitionPrior(nn.Module):
     def __init__(self, lags, latent_size, num_layers=3, hidden_dim=64, compress_dim=10):
         super().__init__()
         self.lags = lags
-        self.drop_path_prob = 0.0
         self.latent_size = latent_size
         self.gs = nn.ModuleList([MLP2(input_dim=compress_dim + 1, hidden_dim=hidden_dim,
                                       output_dim=1, num_layers=num_layers) for _ in
@@ -510,11 +498,7 @@ class NPTransitionPrior(nn.Module):
             residual = self.gs[i](batch_inputs)  # (batch_size x length, 1)
 
             J = jacfwd(self.gs[i])
-            batch_size = batch_inputs.shape[0]
-            data_J_list = []
-            for i in range(batch_size):
-                data_J_list.append(J(batch_inputs[i]))
-            data_J = torch.stack(data_J_list).squeeze()
+            data_J = vmap(J)(batch_inputs).squeeze()
             logabsdet = torch.log(torch.abs(data_J[:, -1]))
 
             sum_log_abs_det_jacobian += logabsdet
@@ -572,11 +556,7 @@ class NPChangeTransitionPrior(nn.Module):
             residual = self.gs[i](batch_inputs)  # (batch_size x length, 1)
 
             J = jacfwd(self.gs[i])
-            batch_size = batch_inputs.shape[0]
-            data_J_list = []
-            for i in range(batch_size):
-                data_J_list.append(J(batch_inputs[i]))
-            data_J = torch.stack(data_J_list).squeeze()
+            data_J = vmap(J)(batch_inputs).squeeze()
             logabsdet = torch.log(torch.abs(data_J[:, -1]))
 
             sum_log_abs_det_jacobian += logabsdet
@@ -592,9 +572,6 @@ class Model(nn.Module):
     def __init__(self, configs) -> None:
         super(Model, self).__init__()
         self.configs = configs
-
-        self.drop_path_prob = 0.0
-
         self.configs.zc_dim = self.configs.enc_in
         self.encoder_zd = Encoder_ZD(configs)
         self.encoder_zc = Encoder_ZC(configs)

@@ -10,13 +10,12 @@ parser.add_argument('-size', type=int, default=1)
 parser.add_argument('-dataset', type=str, nargs='+')
 parser.add_argument('-device', default='0,1,2,3', type=str)
 parser.add_argument('--use_multi_gpu', action='store_true', help='use multiple gpus', default=True)
-# parser.add_argument('-lens', default=0, type=int, nargs='+')
+parser.add_argument('-lens', default=0, type=int, nargs='+')
 
 args = parser.parse_args()
 datalist = args.dataset
-pred_len_list = [720]
 learning_rates_list = [0.00001,0.00005,0.0001]
-batch_size_list = [24,32]
+batch_size_list = [64]
 comand_list = []
 # 新增列表用于记录每次循环的信息
 info_list = []
@@ -26,7 +25,6 @@ models_list = ["NSTS"]
 
 for data in datalist:
     for model in models_list:
-        for pred_len in pred_len_list:
             for lr in learning_rates_list:
                 for seed in seed_list:
                     for batch_size in batch_size_list:
