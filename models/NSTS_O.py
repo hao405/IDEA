@@ -3,8 +3,8 @@ import torch
 import torch.nn as nn
 
 import torch.distributions as D
-
-from functorch import vmap, jacfwd, grad
+from torch.func import vmap
+from functorch import  jacfwd, grad
 from torch.autograd.functional import jacobian
 
 
