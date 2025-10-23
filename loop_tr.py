@@ -4,6 +4,8 @@ from idea_config import d
 
 parser = argparse.ArgumentParser()
 
+os.environ['CUDA_VISIBLE_DEVICES'] = '0,1,2,3'
+
 parser.add_argument('-size', type=int, default=1)
 parser.add_argument('-dataset', type=str, nargs='+')
 parser.add_argument('-device', default='0,1,2,3', type=str)
