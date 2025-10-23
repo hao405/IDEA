@@ -17,6 +17,7 @@ datalist = args.dataset
 learning_rates_list = [0.00001,0.00005,0.0001]
 batch_size_list = [64]
 comand_list = []
+pred_len = args.lens
 # 新增列表用于记录每次循环的信息
 info_list = []
 seed_list = [2023]
