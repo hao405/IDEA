@@ -2,9 +2,11 @@ import argparse
 import os
 from idea_config import d
 
+import torch
 parser = argparse.ArgumentParser()
 
 os.environ['CUDA_VISIBLE_DEVICES'] = '0,1,2,3'
+torch._C._set_fwd_ad_enabled(False)
 
 parser.add_argument('-size', type=int, default=1)
 parser.add_argument('-dataset', type=str, nargs='+')
