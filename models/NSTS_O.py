@@ -307,7 +307,14 @@ class Encoder_ZD(nn.Module):
 
     def kl_loss(self, mus, logvars, z_est, c_embedding):
         lags_and_length = z_est.shape[1]
+        #修改1
         logvars = torch.clamp(logvars, min=-10.0 , max=5.0)
+
+        #修改2
+        if torch.isnan(mus).any():
+            print("警告: mus 中发现 NaN 值，强制转换为 0.0 以避免传播")
+            mus = torch.nan_to_num(mus, nan=0.0)
+
         q_dist = D.Normal(mus, torch.exp(logvars / 2))
         log_qz = q_dist.log_prob(z_est)
 
@@ -392,7 +399,14 @@ class Encoder_ZC(nn.Module):
 
     def kl_loss(self, mus, logvars, z_est):
         lags_and_length = z_est.shape[1]
-        logvars = torch.clamp(logvars, min=-10,max=5.0)
+        # 修改1
+        logvars = torch.clamp(logvars, min=-10.0, max=5.0)
+
+        # 修改2
+        if torch.isnan(mus).any():
+            print("警告: mus 中发现 NaN 值，强制转换为 0.0 以避免传播")
+            mus = torch.nan_to_num(mus, nan=0.0)
+
         q_dist = D.Normal(mus, torch.exp(logvars / 2))
         log_qz = q_dist.log_prob(z_est)
 

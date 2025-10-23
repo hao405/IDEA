@@ -288,6 +288,7 @@ class Exp_NSTS_Pre(Exp_Basic):
                     scaler.update()
                 else:
                     loss.backward()
+                    torch.nn.utils.clip_grad_norm_(self.model.parameters(), max_norm=1.0)
                     model_optim.step()
 
             train_loss = np.average(train_loss)
