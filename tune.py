@@ -134,6 +134,8 @@ def objective(trial):
     args.dropout = trial.suggest_float('dropout', 0.0, 0.5, step=0.1)
     args.e_layers = trial.suggest_categorical('e_layers', [2, 3, 4])
 
+
+
     if args.No_prior:
         Exp = Exp_NSTS
     else:
@@ -147,7 +149,7 @@ def objective(trial):
         print(f"\n--- [Trial {trial.number}] 开始训练 ---")
         param_str = ", ".join([f"{k}={v}" for k, v in trial.params.items()])
         print(param_str)
-        print(f"dataset: {args.data}")
+        print(f"dataset: {args.data_path}")
         print(f"seq_len: {args.seq_len}")
         print(f"pred_len: {args.pred_len}")
 
@@ -180,7 +182,7 @@ if __name__ == '__main__':
     study = optuna.create_study(direction='minimize',pruner=optuna.pruners.MedianPruner())
 
     #   n_trials控制搜索次数
-    study.optimize(objective, n_trials=40)
+    study.optimize(objective, n_trials=3)
 
     print("\n\n--- 优化完成 ---")
     print("完成的试验次数: ", len(study.trials))

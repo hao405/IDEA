@@ -399,7 +399,7 @@ class Encoder_ZC(nn.Module):
     def kl_loss(self, mus, logvars, z_est):
         lags_and_length = z_est.shape[1]
         # 修改1
-        logvars = torch.clamp(logvars, min=1e-2, max=10.0)
+        logvars = torch.clamp(logvars, min=1e-2, max=5.0)
         q_dist = D.Normal(mus, torch.exp(logvars / 2))
         log_qz = q_dist.log_prob(z_est)
 

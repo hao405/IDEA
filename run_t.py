@@ -40,7 +40,7 @@ for data in datalist:
         pred_len_list = [192,336]
         seq_len = 96
     else:
-        pred_len_list = [96,192,336,720]
+        pred_len_list = [192,336,720]
         seq_len = 96
     for model in models_list:
         for pred_len in pred_len_list:
