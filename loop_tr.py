@@ -15,9 +15,9 @@ parser.add_argument('-lens', default=0, type=int, nargs='+')
 args = parser.parse_args()
 datalist = args.dataset
 learning_rates_list = [0.00001]
-batch_size_list = [24]
+batch_size_list = [8]
 comand_list = []
-e_layers_list = [3]
+e_layers_list = [2]
 pred_len_list = args.lens
 # 新增列表用于记录每次循环的信息
 info_list = []

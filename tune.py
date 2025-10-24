@@ -145,32 +145,32 @@ def objective(trial):
     else:
         Exp = Exp_NSTS_Pre
 
-    try:
-        setSeed(args.seed)
-        exp = Exp(args)  # set experiments
-        start_time = time.time()
+    # try:
+    setSeed(args.seed)
+    exp = Exp(args)  # set experiments
+    start_time = time.time()
 
-        print(f"\n--- [Trial {trial.number}] 开始训练 ---")
-        param_str = ", ".join([f"{k}={v}" for k, v in trial.params.items()])
-        print(param_str)
-        print(f"dataset: {args.data_path}")
-        print(f"seq_len: {args.seq_len}")
-        print(f"pred_len: {args.pred_len}")
+    print(f"\n--- [Trial {trial.number}] 开始训练 ---")
+    param_str = ", ".join([f"{k}={v}" for k, v in trial.params.items()])
+    print(param_str)
+    print(f"dataset: {args.data_path}")
+    print(f"seq_len: {args.seq_len}")
+    print(f"pred_len: {args.pred_len}")
 
-        exp.train()
-        object, test_mae, test_mse = exp.test()
+    exp.train()
+    object, test_mae, test_mse = exp.test()
 
-        trial.set_user_attr("test_mae", test_mae)
-        trial.set_user_attr("test_mse", test_mse)
+    trial.set_user_attr("test_mae", test_mae)
+    trial.set_user_attr("test_mse", test_mse)
 
-        torch.cuda.empty_cache()
-        return object
+    torch.cuda.empty_cache()
+    return object
 
         # 捕获任何异常，并将其转换为 TrialPruned
-    except Exception as e:
-        print(f"\n--- [Trial {trial.number}] 训练/测试过程中发生错误，进行剪枝：{e} ---")
-        # 抛出 TrialPruned 异常，通知 Optuna 剪枝此试验
-        raise TrialPruned()
+    # except Exception as e:
+    #     print(f"\n--- [Trial {trial.number}] 训练/测试过程中发生错误，进行剪枝：{e} ---")
+    #     # 抛出 TrialPruned 异常，通知 Optuna 剪枝此试验
+    #     raise TrialPruned()
 
 if __name__ == '__main__':
     start_time = time.time()
