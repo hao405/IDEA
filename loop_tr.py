@@ -15,7 +15,7 @@ parser.add_argument('-lens', default=0, type=int, nargs='+')
 args = parser.parse_args()
 datalist = args.dataset
 learning_rates_list = [0.00001]
-batch_size_list = [32]
+batch_size_list = [64]
 comand_list = []
 e_layers_list = [3]
 pred_len_list = args.lens
