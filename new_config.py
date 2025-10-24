@@ -94,14 +94,14 @@ c = {
     },
     "Traffic": {
         "96": "python tune.py --root_path ./dataset/traffic/   --data_path traffic.csv --data custom    --features M     --enc_in 862  --dec_in 862  --c_out 862 "
-              "  --seq_len 36 --label_len 0  --pred_len  12  --model NSTS  --zd_dim 3  --hidden_dim 256  --hidden_layers 2   --dropout 0   --activation relu   --learning_rate 0.001  --is_bn   --rec_weight 1 --zd_kl_weight 0.000001 --zc_kl_weight 0.000001  --hmm_weight 0.000001  ",
+              "  --seq_len 36 --label_len 0  --pred_len  12  --model NSTS  --zd_dim 1  --hidden_dim 256  --hidden_layers 2   --dropout 0   --activation relu   --learning_rate 0.001  --is_bn   --rec_weight 1 --zd_kl_weight 0.000001 --zc_kl_weight 0.000001  --hmm_weight 0.000001  ",
         "192": "python tune.py --root_path ./dataset/traffic/   --data_path traffic.csv --data custom    --features M     --enc_in 862  --dec_in 862  --c_out 862  "
-              "  --seq_len 72 --label_len 0  --pred_len  24  --model NSTS  --zd_dim 1  --hidden_dim 384  --hidden_layers 2   --dropout 0   --activation relu   --learning_rate 0.001   --rec_weight 1 --zd_kl_weight 0.000001 --zc_kl_weight 0.000001  --hmm_weight 0.000001  ",
+              "  --seq_len 72 --label_len 0  --pred_len  24  --model NSTS  --zd_dim 1  --hidden_dim 256  --hidden_layers 2   --dropout 0   --activation relu   --learning_rate 0.001   --rec_weight 1 --zd_kl_weight 0.000001 --zc_kl_weight 0.000001  --hmm_weight 0.000001  ",
         "336": "python tune.py --root_path ./dataset/traffic/   --data_path traffic.csv --data custom    --features M     --enc_in 862  --dec_in 862  --c_out 862 "
-              "  --seq_len 144 --label_len 0  --pred_len  48  --model NSTS  --zd_dim 1  --hidden_dim 384  --hidden_layers 2   --dropout 0   --activation relu   --learning_rate 0.001    --rec_weight 1 --zd_kl_weight 0.000001 --zc_kl_weight 0.000001  --hmm_weight 0.000001   ",
+              "  --seq_len 144 --label_len 0  --pred_len  48  --model NSTS  --zd_dim 1  --hidden_dim 256  --hidden_layers 2   --dropout 0   --activation relu   --learning_rate 0.001    --rec_weight 1 --zd_kl_weight 0.000001 --zc_kl_weight 0.000001  --hmm_weight 0.000001   ",
 
         "720": "python tune.py --root_path ./dataset/traffic/   --data_path traffic.csv --data custom    --features M     --enc_in 862  --dec_in 862  --c_out 862"
-              "   --seq_len 216 --label_len 0  --pred_len  72  --model NSTS  --zd_dim 1  --hidden_dim 1024  --hidden_layers 2   --dropout 0   --activation relu   --learning_rate 0.001   --rec_weight 1   --zd_kl_weight 0.000001 --zc_kl_weight 0.000001  --hmm_weight 0.000001 ",
+              "   --seq_len 216 --label_len 0  --pred_len  72  --model NSTS  --zd_dim 1  --hidden_dim 256  --hidden_layers 2   --dropout 0   --activation relu   --learning_rate 0.001   --rec_weight 1   --zd_kl_weight 0.000001 --zc_kl_weight 0.000001  --hmm_weight 0.000001 ",
 
     }
 

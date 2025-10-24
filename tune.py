@@ -126,14 +126,18 @@ def objective(trial):
         args.gpu = args.device_ids[0]
 
     # 设置optuna超参
-    args.learning_rate = trial.suggest_float('learning_rate', 1e-5, 5e-3, log=True)
+    args.learning_rate = trial.suggest_float('learning_rate', 1e-4, 1e-3, log=True)
     if args.data_path in ['electricity.csv','weather.csv']:
         args.batch_size = trial.suggest_categorical('batch_size', [16,24,32])
     else:
-        args.batch_size = trial.suggest_categorical('batch_size', [16, 32, 48, 64])
-    args.dropout = trial.suggest_float('dropout', 0.0, 0.5, step=0.1)
+        args.batch_size = trial.suggest_categorical('batch_size', [16, 32, 64])
+    args.dropout = trial.suggest_float('dropout', 0.1, 0.3, step=0.1)
     args.e_layers = trial.suggest_categorical('e_layers', [2, 3, 4])
-
+    # 5. 隐变量KL权重（针对非稳态动态特征）
+    args.zc_kl_weight = trial.suggest_float('zc_kl_weight', 5e-5, 5e-4, log=True)
+    args.zd_kl_weight = trial.suggest_float('zd_kl_weight', 5e-5, 5e-4, log=True)
+    # 6. HMM状态转移权重（弱约束适配非稳态突变）
+    args.hmm_weight = trial.suggest_float('hmm_weight', 5e-5, 5e-4, log=True)
 
 
     if args.No_prior:

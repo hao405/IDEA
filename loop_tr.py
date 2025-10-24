@@ -15,7 +15,7 @@ parser.add_argument('-lens', default=0, type=int, nargs='+')
 args = parser.parse_args()
 datalist = args.dataset
 learning_rates_list = [0.00001]
-batch_size_list = [64]
+batch_size_list = [24]
 comand_list = []
 e_layers_list = [3]
 pred_len_list = args.lens
@@ -34,7 +34,7 @@ for data in datalist:
                         for batch_size in batch_size_list:
                             seq_len = 96
                             label_len = 0
-                            batch_size = 48 if pred_len == 720 else 64
+                            batch_size = 24 if pred_len == 720 else 64
                             command = f"""     {d[data][str(pred_len)].replace("run.py", "run_nsts.py")}  --model {model} --seq_len {seq_len} --e_layers {e_layers} --is_bn --label_len 0  --pred_len {pred_len}   --gpu {args.device}  --batch_size {batch_size}   --learning_rate {lr}     --train_epochs 40  --patience 5 --seed {seed} """
                             comand_list.append(command)
                             # 记录当前循环的信息
